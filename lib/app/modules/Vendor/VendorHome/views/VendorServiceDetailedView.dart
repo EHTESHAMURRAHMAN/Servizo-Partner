@@ -16,57 +16,75 @@ class Vendorservicedetailedview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(automaticallyImplyLeading: false, leading: backButton()),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              _BigTopImage(imageUrl: vendorService.seviceimage),
+
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 14),
                 child: Column(
                   children: [
-                    const SizedBox(height: 22),
-                    Row(
-                      children: [
-                        Center(
-                          child: CircleAvatar(
-                            radius: 46,
-                            backgroundColor: Colors.grey.shade200,
-                            child: _OptimizedAvatar(
-                              imageUrl: vendorService.seviceimage,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(child: _BasicInfoCard(vendor: vendorService)),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    _ContactCard(vendor: vendorService),
-                    const SizedBox(height: 10),
-                    _PricingRatingCard(vendor: vendorService),
-                    const SizedBox(height: 10),
-                    _StatusIDsCard(vendor: vendorService),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 16),
+
+                    _BasicInfoCard_NoIcon(vendor: vendorService),
+
+                    _ContactCard_NoIcon(vendor: vendorService),
+
+                    _PricingCard_NoIcon(vendor: vendorService),
+
                     _DescriptionCard(
                       description: vendorService.vendorDescription,
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 18),
             ],
           ),
         ),
       ),
-      bottomNavigationBar: _buildBottomBar(context, vendorService, controller),
     );
   }
 }
 
-class _BasicInfoCard extends StatelessWidget {
+class _BigTopImage extends StatelessWidget {
+  final String imageUrl;
+  const _BigTopImage({required this.imageUrl});
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        SizedBox(
+          width: double.infinity,
+          child: CachedNetworkImage(
+            imageUrl: imageUrl,
+            fit: BoxFit.cover,
+            placeholder:
+                (context, url) => Shimmer.fromColors(
+                  baseColor: Colors.grey[300]!,
+                  highlightColor: Colors.grey[100]!,
+                  child: Container(color: Colors.grey[300]),
+                ),
+            errorWidget:
+                (context, error, stackTrace) => Container(
+                  color: Colors.grey.shade200,
+                  alignment: Alignment.center,
+                  child: const Icon(Icons.photo, size: 60, color: Colors.grey),
+                ),
+          ),
+        ),
+        Padding(padding: const EdgeInsets.all(20.0), child: backButton()),
+      ],
+    );
+  }
+}
+
+class _BasicInfoCard_NoIcon extends StatelessWidget {
   final VendorList vendor;
-  const _BasicInfoCard({required this.vendor});
+  const _BasicInfoCard_NoIcon({required this.vendor});
 
   @override
   Widget build(BuildContext context) {
@@ -74,23 +92,14 @@ class _BasicInfoCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            "Basic Information",
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 12),
-          _detailRow(
-            Icons.person,
-            "Vendor Name",
+          Text(
             vendor.vendorName,
-            Get.theme.primaryColor,
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
-          const SizedBox(height: 10),
-          _detailRow(
-            Icons.category,
-            "Category",
+          const SizedBox(height: 4),
+          Text(
             vendor.categoryname,
-            Get.theme.primaryColor,
+            style: const TextStyle(fontSize: 16, color: Colors.grey),
           ),
         ],
       ),
@@ -98,9 +107,9 @@ class _BasicInfoCard extends StatelessWidget {
   }
 }
 
-class _ContactCard extends StatelessWidget {
+class _ContactCard_NoIcon extends StatelessWidget {
   final VendorList vendor;
-  const _ContactCard({required this.vendor});
+  const _ContactCard_NoIcon({required this.vendor});
 
   @override
   Widget build(BuildContext context) {
@@ -113,21 +122,17 @@ class _ContactCard extends StatelessWidget {
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 12),
-          _detailRow(
-            Icons.phone,
-            "Phone Number",
-            vendor.vendorPhone,
-            Colors.green.shade600,
-          ),
+
+          _textRow("Phone Number", vendor.vendorPhone),
         ],
       ),
     );
   }
 }
 
-class _PricingRatingCard extends StatelessWidget {
+class _PricingCard_NoIcon extends StatelessWidget {
   final VendorList vendor;
-  const _PricingRatingCard({required this.vendor});
+  const _PricingCard_NoIcon({required this.vendor});
 
   @override
   Widget build(BuildContext context) {
@@ -144,7 +149,7 @@ class _PricingRatingCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text(
-                "Pricing & Rating",
+                "Pricing",
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               Container(
@@ -156,23 +161,18 @@ class _PricingRatingCard extends StatelessWidget {
                 child: Text(
                   "$discountPercentage% OFF",
                   style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
                     color: Get.theme.canvasColor,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 12,
                   ),
                 ),
               ),
             ],
           ),
           const SizedBox(height: 12),
+
           Row(
             children: [
-              Icon(
-                Icons.currency_rupee,
-                color: Colors.green.shade600,
-                size: 20,
-              ),
-              const SizedBox(width: 10),
               const Text(
                 "Price: ",
                 style: TextStyle(fontWeight: FontWeight.w600),
@@ -188,77 +188,16 @@ class _PricingRatingCard extends StatelessWidget {
               Text(
                 "₹${vendor.vendorPrice}",
                 style: TextStyle(
-                  fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  color: Colors.green.shade600,
+                  color: Colors.green.shade700,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 10),
-          _detailRow(
-            Icons.star,
-            "Rating",
-            "${vendor.vendorRating} / 5 ⭐",
-            Colors.amber.shade700,
-          ),
-        ],
-      ),
-    );
-  }
-}
 
-class _StatusIDsCard extends StatelessWidget {
-  final VendorList vendor;
-  const _StatusIDsCard({required this.vendor});
-
-  @override
-  Widget build(BuildContext context) {
-    return _cardContainer(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            "Status & System IDs",
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
           const SizedBox(height: 12),
-          _detailRow(
-            Icons.check_circle,
-            "Status",
-            vendor.vendorStatus.toUpperCase(),
-            vendor.vendorStatus.toLowerCase() == "active"
-                ? Colors.green
-                : Colors.red,
-          ),
-          const SizedBox(height: 10),
-          _detailRow(
-            Icons.tag,
-            "Vendor ID",
-            vendor.vendorId.toString(),
-            Colors.blue,
-          ),
-          const SizedBox(height: 10),
-          _detailRow(
-            Icons.build,
-            "Service ID",
-            "Service ID not available",
-            Colors.blue,
-          ),
-          const SizedBox(height: 10),
-          _detailRow(
-            Icons.category_outlined,
-            "Category ID",
-            vendor.categoryId.toString(),
-            Colors.purple,
-          ),
-          const SizedBox(height: 10),
-          _detailRow(
-            Icons.subdirectory_arrow_right,
-            "Subcategory ID",
-            vendor.subcategoryId.toString(),
-            Colors.purple,
-          ),
+
+          _textRow("Rating", "${vendor.vendorRating} / 5"),
         ],
       ),
     );
@@ -279,13 +218,13 @@ class _DescriptionCard extends StatelessWidget {
             "About Vendor",
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 6),
           Text(
             description.isNotEmpty ? description : "No description available",
             style: TextStyle(
               fontSize: 14,
               color: Colors.grey.shade800,
-              height: 1.5,
+              height: 1.45,
             ),
           ),
         ],
@@ -294,11 +233,10 @@ class _DescriptionCard extends StatelessWidget {
   }
 }
 
-/// Common card container replacement for Neumorphic
 Widget _cardContainer({required Widget child}) {
   return Container(
     width: double.infinity,
-    margin: const EdgeInsets.only(bottom: 8),
+    margin: const EdgeInsets.only(bottom: 12),
     padding: const EdgeInsets.all(16),
     decoration: BoxDecoration(
       color: Colors.white,
@@ -308,88 +246,17 @@ Widget _cardContainer({required Widget child}) {
   );
 }
 
-/// Common detail row
-Widget _detailRow(IconData icon, String label, String value, Color iconColor) {
-  return Row(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Icon(icon, color: iconColor, size: 20),
-      const SizedBox(width: 10),
-      Text("$label: ", style: const TextStyle(fontWeight: FontWeight.w600)),
-      Expanded(
-        child: Text(
-          value,
-          style: const TextStyle(fontSize: 14, color: Colors.black87),
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-        ),
-      ),
-    ],
-  );
-}
-
-/// Optimized avatar widget
-class _OptimizedAvatar extends StatelessWidget {
-  final String imageUrl;
-  const _OptimizedAvatar({required this.imageUrl});
-
-  @override
-  Widget build(BuildContext context) {
-    return ClipOval(
-      child: SizedBox(
-        height: 92,
-        width: 92,
-        child: CachedNetworkImage(
-          imageUrl: imageUrl,
-          fit: BoxFit.cover,
-          placeholder:
-              (context, url) => Shimmer.fromColors(
-                baseColor: Colors.grey[300]!,
-                highlightColor: Colors.grey[100]!,
-                child: Container(
-                  color: Colors.grey[300],
-                  width: 92,
-                  height: 92,
-                ),
-              ),
-          errorWidget:
-              (context, error, stackTrace) => Container(
-                alignment: Alignment.center,
-                color: Colors.grey.shade200,
-                child: const Icon(Icons.person, color: Colors.grey, size: 50),
-              ),
-        ),
-      ),
-    );
-  }
-}
-
-Widget _buildBottomBar(
-  BuildContext context,
-  VendorList vendorService,
-  VenderBookingController controller,
-) {
-  return Container(
-    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-    decoration: BoxDecoration(color: Colors.white),
+Widget _textRow(String label, String value) {
+  return Padding(
+    padding: const EdgeInsets.only(bottom: 8),
     child: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        Text("$label: ", style: const TextStyle(fontWeight: FontWeight.w600)),
         Expanded(
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 14),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              backgroundColor: Colors.grey.shade200,
-              foregroundColor: Colors.black87,
-            ),
-            onPressed: () => Get.back(),
-            child: const Text(
-              "Back",
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-            ),
+          child: Text(
+            value,
+            style: const TextStyle(fontSize: 14, color: Colors.black87),
           ),
         ),
       ],
