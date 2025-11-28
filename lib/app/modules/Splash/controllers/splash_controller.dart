@@ -93,7 +93,6 @@ class SplashController extends GetxController {
     await Future.delayed(const Duration(seconds: 2));
 
     bool isLogin = prefs.getBool(StorageConstants.isLogin) ?? false;
-    bool isVender = prefs.getBool(StorageConstants.loginAsVender) ?? false;
 
     String? storedData = prefs.getString(StorageConstants.userInfo);
 
@@ -111,11 +110,9 @@ class SplashController extends GetxController {
         ProfileData activeUser = users.first;
         userInfo = activeUser;
       }
-      if (isVender) {
+      if (isLogin) {
         Get.offAllNamed(Routes.VENDOR_DASHBOARD);
-      } else if (isLogin) {
-        Get.offAllNamed(Routes.DASHBOARD);
-      } else if (!isLogin || !isVender) {
+      } else if (!isLogin) {
         Get.offAllNamed(Routes.ONBOARD);
         return;
       }

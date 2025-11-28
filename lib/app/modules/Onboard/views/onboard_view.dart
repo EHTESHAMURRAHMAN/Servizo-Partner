@@ -12,27 +12,33 @@ class OnboardView extends GetView<OnboardController> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(automaticallyImplyLeading: false),
+      backgroundColor: theme.scaffoldBackgroundColor,
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        automaticallyImplyLeading: false,
+      ),
+
       body: Column(
         children: [
           Expanded(
             child: PageView(
               controller: pageController,
-              onPageChanged: (index) {
-                controller.pageIndex.value = index;
-              },
+              onPageChanged: (index) => controller.pageIndex.value = index,
               children: [
                 buildPage(
-                  "assets/icons/realtor_8373731.png",
-                  "Get Services at Your Doorstep",
-                  "Find trusted professionals for home services like plumbing, electrical work, beauty, and more—all delivered conveniently to you.",
                   context,
+                  image: "assets/onboard/onboard1.png",
+                  title: "Showcase Your Skills. Deliver Excellence.",
+                  description:
+                      "Join a trusted platform built for skilled professionals like you. Whether you specialize in AC repair, electrical work, plumbing, appliance servicing, beauty, home cleaning, or any other trade — we help you reach the right customers and grow your business with confidence.",
                 ),
                 buildPage(
-                  "assets/icons/expert.png",
-                  "Connecting You with Experts",
-                  "Easily book skilled professionals and experience hassle-free services tailored to your needs.",
                   context,
+                  image: "assets/onboard/onboard2.png",
+                  title: "Build Trust With Verified Credentials",
+                  description:
+                      "Our rigorous verification system ensures every professional meets high standards of quality and reliability. Earn customer trust, build a strong reputation, and receive repeat bookings by delivering exceptional service—every single time.",
                 ),
                 buildLastPage(context),
               ],
@@ -45,16 +51,16 @@ class OnboardView extends GetView<OnboardController> {
               children: List.generate(
                 3,
                 (index) => AnimatedContainer(
-                  duration: const Duration(milliseconds: 300),
+                  duration: const Duration(milliseconds: 350),
                   margin: const EdgeInsets.all(6),
-                  width: controller.pageIndex.value == index ? 16 : 12,
-                  height: 12,
+                  width: controller.pageIndex.value == index ? 22 : 10,
+                  height: 10,
                   decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
                     color:
                         controller.pageIndex.value == index
                             ? theme.primaryColor
-                            : theme.disabledColor.withOpacity(0.4),
-                    shape: BoxShape.circle,
+                            : Colors.grey.withOpacity(0.4),
                   ),
                 ),
               ),
@@ -63,45 +69,54 @@ class OnboardView extends GetView<OnboardController> {
 
           Obx(
             () => Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 26),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  if (controller.pageIndex.value > 0)
-                    IconButton(
-                      onPressed: () {
-                        pageController.previousPage(
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.easeInOut,
-                        );
-                      },
-                      icon: const Icon(Icons.arrow_back_ios, size: 28),
-                      color: Colors.black54,
-                    )
-                  else
-                    const SizedBox(width: 56),
+                  controller.pageIndex.value > 0
+                      ? IconButton(
+                        onPressed: () {
+                          pageController.previousPage(
+                            duration: const Duration(milliseconds: 300),
+                            curve: Curves.easeInOut,
+                          );
+                        },
+                        icon: const Icon(Icons.arrow_back_ios, size: 28),
+                        color: Colors.black54,
+                      )
+                      : const SizedBox(width: 56),
 
                   controller.pageIndex.value < 2
-                      ? ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          shape: const CircleBorder(),
-                          padding: const EdgeInsets.all(14),
-                          backgroundColor: theme.primaryColor,
-                        ),
-                        onPressed: () {
-                          if (controller.pageIndex.value < 2) {
-                            pageController.nextPage(
-                              duration: const Duration(milliseconds: 300),
-                              curve: Curves.easeInOut,
-                            );
-                          } else {
-                            Get.toNamed(Routes.LOGIN);
-                          }
+                      ? GestureDetector(
+                        onTap: () {
+                          pageController.nextPage(
+                            duration: const Duration(milliseconds: 300),
+                            curve: Curves.easeInOut,
+                          );
                         },
-                        child: const Icon(
-                          Icons.arrow_forward_ios,
-                          size: 28,
-                          color: Colors.white,
+                        child: Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            gradient: LinearGradient(
+                              colors: [
+                                theme.primaryColor,
+                                theme.primaryColor.withOpacity(0.8),
+                              ],
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: theme.primaryColor.withOpacity(0.4),
+                                blurRadius: 10,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: const Icon(
+                            Icons.arrow_forward_ios,
+                            color: Colors.white,
+                            size: 26,
+                          ),
                         ),
                       )
                       : const SizedBox.shrink(),
@@ -115,33 +130,51 @@ class OnboardView extends GetView<OnboardController> {
   }
 
   Widget buildPage(
-    String image,
-    String title,
-    String description,
-    BuildContext context,
-  ) {
+    BuildContext context, {
+    required String image,
+    required String title,
+    required String description,
+  }) {
+    final theme = Theme.of(context);
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 32.0),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           const SizedBox(height: 50),
-          Image.asset(image, height: MediaQuery.of(context).size.height / 4),
-          const SizedBox(height: 20),
+
+          AnimatedScale(
+            duration: const Duration(milliseconds: 500),
+            scale: 1,
+            child: Image.asset(
+              image,
+              height: MediaQuery.of(context).size.height / 3.3,
+            ),
+          ),
+
+          const SizedBox(height: 30),
+
           Text(
             title,
             textAlign: TextAlign.center,
             style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Theme.of(context).textTheme.bodyLarge?.color,
+              fontSize: 24,
+              fontWeight: FontWeight.w800,
+              color: theme.textTheme.bodyLarge?.color,
             ),
           ),
-          const SizedBox(height: 20),
+
+          const SizedBox(height: 14),
+
           Text(
             description,
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 16),
+            style: TextStyle(
+              fontSize: 16,
+              height: 1.5,
+              color: theme.textTheme.bodyMedium?.color?.withOpacity(0.7),
+            ),
           ),
         ],
       ),
@@ -150,84 +183,87 @@ class OnboardView extends GetView<OnboardController> {
 
   Widget buildLastPage(BuildContext context) {
     final theme = Theme.of(context);
-    return SingleChildScrollView(
-      physics: const BouncingScrollPhysics(),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 32.0),
-        child: Column(
-          children: [
-            const SizedBox(height: 50),
-            Padding(
-              padding: const EdgeInsets.all(24.0),
-              child: Image.asset(
-                'assets/icons/join.png',
-                height: MediaQuery.of(context).size.height / 4,
-                fit: BoxFit.contain,
-              ),
-            ),
-            const SizedBox(height: 20),
-            Text(
-              "Join Us Today",
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: theme.textTheme.bodyLarge?.color,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 10),
-            Text(
-              "Are you a skilled professional? Or are you looking for trusted services? Choose your role and get started!",
-              style: TextStyle(
-                fontSize: 16,
-                color: theme.textTheme.bodyMedium?.color?.withOpacity(0.7),
-              ),
-              textAlign: TextAlign.justify,
-            ),
-            const SizedBox(height: 20),
 
-            OutlinedButton(
-              onPressed: () => Get.toNamed(Routes.VENDOR_LOGIN),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 32.0),
+      child: Column(
+        children: [
+          Image.asset(
+            'assets/onboard/onboard3.png',
+            height: MediaQuery.of(context).size.height / 3.3,
+          ),
+
+          const SizedBox(height: 20),
+
+          Text(
+            "Unlock New Opportunities. Earn More.",
+            style: TextStyle(
+              fontSize: 26,
+              fontWeight: FontWeight.w900,
+              color: theme.textTheme.bodyLarge?.color,
+            ),
+            textAlign: TextAlign.center,
+          ),
+
+          const SizedBox(height: 10),
+
+          Text(
+            "Access new opportunities, manage bookings smoothly, and boost your earnings with a seamless vendor experience.",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 16,
+              height: 1.6,
+              color: theme.textTheme.bodyMedium?.color?.withOpacity(0.7),
+            ),
+          ),
+
+          Spacer(),
+          Obx(
+            () => OutlinedButton(
+              onPressed: () async {
+                controller.isLoading.value = true;
+                await Future.delayed(const Duration(milliseconds: 600));
+                Get.toNamed(Routes.VENDOR_LOGIN);
+
+                controller.isLoading.value = false;
+              },
               style: OutlinedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(
                   vertical: 16,
                   horizontal: 50,
                 ),
-                shape: StadiumBorder(),
+                shape: const StadiumBorder(),
+                side: BorderSide(color: theme.primaryColor, width: 1.5),
               ),
-              child: Text(
-                "Login as Vendor",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                  color: theme.textTheme.bodyLarge?.color,
-                ),
-              ),
+              child:
+                  controller.isLoading.value
+                      ? TweenAnimationBuilder(
+                        tween: Tween<double>(begin: 0, end: 1),
+                        duration: const Duration(milliseconds: 600),
+                        builder: (context, value, child) {
+                          return Transform.rotate(
+                            angle: value * 6.3,
+                            child: Icon(
+                              Icons.sync,
+                              color: theme.primaryColor,
+                              size: 22,
+                            ),
+                          );
+                        },
+                      )
+                      : Text(
+                        "Login",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 17,
+                          color: theme.primaryColor,
+                        ),
+                      ),
             ),
-            const SizedBox(height: 20),
+          ),
 
-            ElevatedButton(
-              onPressed: () => Get.toNamed(Routes.LOGIN),
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 16,
-                  horizontal: 50,
-                ),
-                shape: StadiumBorder(),
-                backgroundColor: theme.primaryColor,
-              ),
-              child: const Text(
-                "Login as User",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-            const SizedBox(height: 30),
-          ],
-        ),
+          Spacer(),
+        ],
       ),
     );
   }

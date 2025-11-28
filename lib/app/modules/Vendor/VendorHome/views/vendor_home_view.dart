@@ -8,6 +8,7 @@ import 'package:servizo_vendor/app/Api/Base_Api.dart';
 import 'package:servizo_vendor/app/Model/VendorList_resp.dart';
 import 'package:servizo_vendor/app/modules/Vendor/VendorHome/views/VendorServiceDetailedView.dart';
 import 'package:servizo_vendor/app/routes/app_pages.dart';
+
 import '../controllers/vendor_home_controller.dart';
 
 class VendorHomeView extends GetView<VendorHomeController> {
@@ -15,10 +16,18 @@ class VendorHomeView extends GetView<VendorHomeController> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Get.theme;
+
     return Scaffold(
-      appBar: AppBar(elevation: 0, toolbarHeight: 0),
+      backgroundColor: theme.scaffoldBackgroundColor,
+      appBar: AppBar(
+        elevation: 0,
+        toolbarHeight: 0,
+        backgroundColor: Colors.transparent,
+      ),
       body: SafeArea(
         child: RefreshIndicator(
+          color: theme.primaryColor,
           onRefresh: () => controller.getVendorList(),
           child: SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
@@ -27,16 +36,19 @@ class VendorHomeView extends GetView<VendorHomeController> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(height: 16),
-                  _buildHeader(),
+                  const SizedBox(height: 18),
+                  _buildHeader(theme),
+
+                  const SizedBox(height: 18),
+                  const VendorHomeSearchBox(),
 
                   const SizedBox(height: 20),
-                  const VendorHomeBody(),
-                  const SizedBox(height: 24),
                   _buildCarousel(),
-                  const SizedBox(height: 24),
+
+                  const SizedBox(height: 26),
                   _buildVendorListTitle(),
-                  const SizedBox(height: 10),
+
+                  const SizedBox(height: 12),
                   Obx(() {
                     if (!controller.isVendorList.value) {
                       return const Center(child: CircularProgressIndicator());
@@ -55,7 +67,8 @@ class VendorHomeView extends GetView<VendorHomeController> {
                       },
                     );
                   }),
-                  const SizedBox(height: 30),
+
+                  const SizedBox(height: 40),
                 ],
               ),
             ),
@@ -65,38 +78,71 @@ class VendorHomeView extends GetView<VendorHomeController> {
     );
   }
 
-  Widget _buildHeader() {
+  // ---------------- HEADER ----------------
+  Widget _buildHeader(ThemeData theme) {
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(15),
-        color: Get.theme.canvasColor,
+        color: theme.cardColor,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(blurRadius: 8, color: Colors.black.withOpacity(0.05)),
+        ],
       ),
-      padding: const EdgeInsets.all(10),
-      height: 100,
+      padding: const EdgeInsets.all(16),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(height: 20),
-              Text(
-                userInfo?.name ?? "Vendor",
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              Text("Jasola Vihar - New Delhi", style: TextStyle(fontSize: 14)),
-            ],
+          // User Avatar
+          CircleAvatar(
+            radius: 26,
+            backgroundColor: theme.primaryColor.withOpacity(0.1),
+            child: Icon(
+              CupertinoIcons.person_fill,
+              size: 26,
+              color: theme.primaryColor,
+            ),
           ),
+
+          const SizedBox(width: 14),
+
+          // Name + Location
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  userInfo?.name ?? "Vendor",
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  "Jasola Vihar - New Delhi",
+                  style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+                ),
+              ],
+            ),
+          ),
+
+          // Buttons
           Row(
             children: [
               IconButton(
                 onPressed: () => Get.toNamed(Routes.ADD_VENDER_SERVICE),
-                icon: const Icon(CupertinoIcons.add, size: 24),
+                icon: Icon(
+                  CupertinoIcons.add_circled_solid,
+                  size: 26,
+                  color: theme.primaryColor,
+                ),
               ),
               const SizedBox(width: 4),
               IconButton(
                 onPressed: () {},
-                icon: const Icon(CupertinoIcons.bell, size: 24),
+                icon: Icon(
+                  CupertinoIcons.bell_fill,
+                  size: 22,
+                  color: theme.primaryColor,
+                ),
               ),
             ],
           ),
@@ -105,155 +151,167 @@ class VendorHomeView extends GetView<VendorHomeController> {
     );
   }
 
+  // ---------------- CAROUSEL ----------------
   Widget _buildCarousel() {
-    final banners = ["assets/banner/7677532.jpg", "assets/banner/8392116.jpg"];
-    return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+    final banners = ["assets/banner/banner1.png", "assets/banner/banner2.png"];
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(16),
       child: CarouselSlider(
         options: CarouselOptions(
-          scrollDirection: Axis.vertical,
-          height: 180,
           autoPlay: true,
           viewportFraction: 1,
-          enlargeCenterPage: true,
+          height: 170,
+          autoPlayCurve: Curves.easeInOut,
         ),
         items:
             banners.map((path) {
-              return ClipRRect(
-                borderRadius: BorderRadius.circular(16),
-                child: Image.asset(
-                  path,
-                  fit: BoxFit.cover,
-                  width: double.infinity,
-                  height: double.infinity,
-                ),
+              return Image.asset(
+                path,
+                fit: BoxFit.cover,
+                width: double.infinity,
               );
             }).toList(),
       ),
     );
   }
 
+  // ---------------- TITLE: My Services ----------------
   Widget _buildVendorListTitle() {
-    return const Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16.0),
-      child: Row(
-        children: [
-          Expanded(
-            child: Text(
-              "My Services",
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-          ),
-        ],
-      ),
+    return const Text(
+      "My Services",
+      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
     );
   }
 
+  // ---------------- SERVICE CARD ----------------
   Widget _buildVendorCard(VendorList vendor) {
     return InkWell(
       onTap: () => Get.to(Vendorservicedetailedview(vendor)),
-      child: Column(
-        children: [
-          Card(
-            elevation: 0,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 16),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              blurRadius: 10,
+              offset: const Offset(0, 3),
+              color: Colors.black.withOpacity(0.05),
             ),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
+          ],
+        ),
+        child: Row(
+          children: [
+            // Image
+            ClipRRect(
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(16),
+                bottomLeft: Radius.circular(16),
               ),
-              child: Row(
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: CachedNetworkImage(
-                      imageUrl: vendor.seviceimage,
-                      width: 80,
-                      height: 80,
-                      fit: BoxFit.cover,
-                      errorWidget:
-                          (_, __, ___) =>
-                              const Icon(Icons.broken_image, size: 40),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          vendor.vendorName,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          vendor.categoryname,
-                          style: TextStyle(color: Colors.grey.shade700),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          vendor.vendorDescription,
-                          style: const TextStyle(fontSize: 13),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        const SizedBox(height: 6),
-                        Text(
-                          "₹ ${vendor.vendorPrice}",
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w600,
-                            color: Colors.green,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const Icon(
-                    Icons.arrow_forward_ios,
-                    size: 16,
-                    color: Colors.grey,
-                  ),
-                ],
+              child: CachedNetworkImage(
+                imageUrl: vendor.seviceimage,
+                width: 90,
+                height: 100,
+                fit: BoxFit.cover,
+                errorWidget:
+                    (_, __, ___) => const Icon(Icons.broken_image, size: 40),
               ),
             ),
-          ),
-        ],
-      ),
-    );
-  }
-}
 
-class VendorHomeBody extends StatelessWidget {
-  const VendorHomeBody({super.key});
+            const SizedBox(width: 12),
 
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      child: Card(
-        elevation: 0,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-        child: const Padding(
-          padding: EdgeInsets.symmetric(vertical: 18, horizontal: 16),
-          child: Row(
-            children: [
-              Icon(CupertinoIcons.search),
-              SizedBox(width: 10),
-              AnimatedSearchHints(),
-            ],
-          ),
+            // Info
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      vendor.vendorName,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+
+                    Text(
+                      vendor.categoryname,
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.grey.shade700,
+                      ),
+                    ),
+
+                    const SizedBox(height: 4),
+
+                    Text(
+                      vendor.vendorDescription,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(fontSize: 13, height: 1.3),
+                    ),
+
+                    const SizedBox(height: 6),
+
+                    Text(
+                      "₹ ${vendor.vendorPrice}",
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.green,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            const Padding(
+              padding: EdgeInsets.only(right: 12),
+              child: Icon(
+                Icons.arrow_forward_ios,
+                size: 16,
+                color: Colors.grey,
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 }
+
+// --------------------------------------------------------------
+// SEARCH BOX
+// --------------------------------------------------------------
+
+class VendorHomeSearchBox extends StatelessWidget {
+  const VendorHomeSearchBox({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+        child: Row(
+          children: const [
+            Icon(CupertinoIcons.search, size: 22),
+            SizedBox(width: 12),
+            Expanded(child: AnimatedSearchHints()),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// --------------------------------------------------------------
+// SEARCH HINTS ANIMATION
+// --------------------------------------------------------------
 
 class AnimatedSearchHints extends StatelessWidget {
   const AnimatedSearchHints({super.key});
@@ -262,22 +320,19 @@ class AnimatedSearchHints extends StatelessWidget {
   Widget build(BuildContext context) {
     return AnimatedTextKit(
       repeatForever: true,
-      pause: const Duration(milliseconds: 1000),
+      pause: const Duration(milliseconds: 1200),
       animatedTexts: [
-        TyperAnimatedText("Search for services...", textStyle: _textStyle),
-        TyperAnimatedText(
-          "Find government documents...",
-          textStyle: _textStyle,
-        ),
-        TyperAnimatedText("Check license status...", textStyle: _textStyle),
-        TyperAnimatedText("Apply for a passport...", textStyle: _textStyle),
+        TyperAnimatedText("Search for services...", textStyle: _style),
+        TyperAnimatedText("Find government documents...", textStyle: _style),
+        TyperAnimatedText("Check license status...", textStyle: _style),
+        TyperAnimatedText("Apply for a passport...", textStyle: _style),
       ],
     );
   }
 
-  static const TextStyle _textStyle = TextStyle(
+  static const _style = TextStyle(
     fontSize: 16,
-    fontWeight: FontWeight.w300,
+    fontWeight: FontWeight.w400,
     color: Colors.grey,
   );
 }

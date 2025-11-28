@@ -102,7 +102,7 @@ class VendorSettingView extends GetView<VendorSettingController> {
           icon: Icons.connect_without_contact,
           title: 'Connect with Us',
           subtitle: 'Reach out via social media or email',
-          onTap: () => Get.toNamed(Routes.CONNECT_WITH_U_S),
+          // onTap: () => Get.toNamed(Routes.CONNECT_WITH_U_S),
         ),
 
         _buildSettingTile(
@@ -111,7 +111,7 @@ class VendorSettingView extends GetView<VendorSettingController> {
           icon: Icons.security,
           title: 'Security',
           subtitle: 'Manage account security settings',
-          onTap: () => Get.toNamed(Routes.SECURITY),
+          // onTap: () => Get.toNamed(Routes.SECURITY),
         ),
 
         _buildSettingTile(
@@ -129,7 +129,7 @@ class VendorSettingView extends GetView<VendorSettingController> {
           icon: Icons.person,
           title: 'Update Profile',
           subtitle: 'Edit your profile information',
-          onTap: () => Get.toNamed(Routes.UPDATE_PROFILE),
+          // onTap: () => Get.toNamed(Routes.UPDATE_PROFILE),
         ),
 
         _buildSettingTile(
@@ -138,7 +138,7 @@ class VendorSettingView extends GetView<VendorSettingController> {
           icon: Icons.support,
           title: 'Help & Support',
           subtitle: 'Get assistance or contact support',
-          onTap: () => Get.toNamed(Routes.HELP_SUPPORT),
+          //onTap: () => Get.toNamed(Routes.HELP_SUPPORT),
         ),
       ],
     );

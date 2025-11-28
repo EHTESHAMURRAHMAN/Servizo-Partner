@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:servizo_vendor/app/Utils/Common_Widget.dart';
-import 'package:servizo_vendor/app/modules/User/SettingUtils/ConnectWithUS/views/connect_with_u_s_view.dart';
+import 'package:servizo_vendor/app/modules/Vendor/SettingUtils/ConnectWithUS/views/connect_with_u_s_view.dart';
 
 import '../controllers/help_support_controller.dart';
 

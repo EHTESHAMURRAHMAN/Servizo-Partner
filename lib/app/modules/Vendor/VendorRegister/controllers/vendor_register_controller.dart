@@ -63,7 +63,6 @@ class VendorRegisterController extends GetxController {
         ProfileResp response = apiResponse.data;
         if (response.data?.role == "Vendor") {
           prefs.setBool(StorageConstants.isLogin, false);
-          prefs.setBool(StorageConstants.loginAsVender, true);
           Get.toNamed(Routes.VENDOR_DASHBOARD);
         } else {
           debugPrint(response.message.toString());
